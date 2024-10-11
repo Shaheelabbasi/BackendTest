@@ -1,50 +1,38 @@
-name: Node.js CI
+name: Docker Compose Action
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: write  # Grant write permission for contents
+    branches: [ "main" ]  # Trigger on pushes to the main branch
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 20.x ]
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4  # Check out the code from the repository
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2  # Set up Docker Buildx for building Docker images
 
-    - run: npm ci
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username from GitHub Secrets
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Docker Hub password from GitHub Secrets
 
-    - run: npm run build --if-present  # Ensure the build step creates the dist folder
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3  # Build and push Docker images
+        with:
+          context: .  # Build context set to the root of the repository
+          file: ./Dockerfile  # Path to your Dockerfile
+          push: true  # Push the built image to Docker Hub
+          tags: shaheel456/backendtest:latest  # Tag for the Docker image
 
-    - name: Build Docker Compose
-      run: |
-        docker-compose -f docker-compose.yml build  # Build the services defined in the docker-compose file
-
-    - name: Start Application
-      run: |
-        docker-compose up -d  # Start your application and MongoDB service
-
-    - name: Wait for MongoDB
-      run: |
-        sleep 10  # Wait for MongoDB to start
-
-    - name: Verify Metrics Endpoint
-      run: |
-        curl -f http://localhost:5000/metrics
-
-    - name: Shutdown Application
-      run: |
-        docker-compose down  # Stop the services
+      - name: Run docker-compose
+        uses: hoverkraft-tech/compose-action@v2.0.1  # Run your services defined in docker-compose
+        with:
+          compose-file: "./docker/docker-compose.yml"  # Path to your docker-compose file
+        env:
+          MONGO_URL: "mongodb://mongodb:27017/AuthService"  # Example of a MongoDB connection string
+          
