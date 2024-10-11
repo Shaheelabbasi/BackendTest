@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    image: backendtest  # Ensure this matches the name you used for your built image
+    container_name: Backend_Test_Auth
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env  # Include the .env file for environment variables
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:  # Named volume for MongoDB data persistence
