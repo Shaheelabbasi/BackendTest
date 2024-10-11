@@ -32,7 +32,7 @@ jobs:
       - name: Run docker-compose
         uses: hoverkraft-tech/compose-action@v2.0.1  # Run your services defined in docker-compose
         with:
-          compose-file: "./docker/docker-compose.yml"  # Path to your docker-compose file
+          compose-file: "./docker-compose.yml"  # Path to your docker-compose file
         env:
           MONGO_URL: "mongodb://mongodb:27017/AuthService"  # Example of a MongoDB connection string
           
