@@ -2,7 +2,7 @@
 FROM node:20
 
 # Create a working directory for your application
-WORKDIR /usr/src/app/authservice
+WORKDIR /usr/src/app/Testauthservice
 
 # Copy the package.json and package-lock.json files to the working directory
 COPY package*.json ./
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build --if-present
 
 # Expose the port that your application runs on (adjust if necessary)
-EXPOSE 9000
+EXPOSE 5000
 
 # Start the application
 CMD [ "npm", "run", "dev" ]

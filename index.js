@@ -4,7 +4,7 @@ const { connectDb } = require('./Db/connect.js');
 
 connectDb()
   .then(() => {
-    app.listen(9000, () =>
+    app.listen(5000, () =>
       console.log(`Auth Server is running on the port 9000`)
     );
   })
