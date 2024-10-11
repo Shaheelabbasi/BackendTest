@@ -1,25 +1,21 @@
-version: '3.8'
+ # You can omit this if you prefer not to specify a version
 
 services:
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-
   app:
-    image: backendtest  # Ensure this matches the name you used for your built image
-    container_name: Backend_Test_Auth
-    restart: always
+    image: shaheel456/backendtest:latest  # Your backend image
     ports:
-      - "5000:5000"
-    env_file:
-      - .env  # Include the .env file for environment variables
+      - "5000:5000"  # Map port 3000 of the container to port 3000 on the host
+    environment:
+      MONGO_URL: ${MONGO_URL}  # MongoDB connection string, loaded from .env or GitHub Secrets
     depends_on:
-      - mongodb
+      - mongodb  # Ensure mongodb starts before the app
+  
+  mongodb:
+    image: mongo  # Use the official MongoDB image
+    ports:
+      - "27017:27017"  # Expose MongoDB port
+    volumes:
+      - mongo-data:/data/db  # Persist MongoDB data
 
 volumes:
-  mongo_data:  # Named volume for MongoDB data persistence
+  mongo-data:  # Define a volume for MongoDB data persistence
